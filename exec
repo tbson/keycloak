@@ -1,0 +1,37 @@
+#!/bin/bash
+
+FIRST_ARG="$1"
+shift
+ARGS="$@"
+
+docker_clean() {
+    # docker system prune --all --force --volumes
+    docker system prune --volumes -f
+    # docker volume rm $(docker volume ls -q)
+    docker volume ls -q | xargs -r docker volume rm
+    docker network create shared_network
+    docker network create common_proxy
+    echo "docker system prune --volumes -f"
+}
+
+docker_down () {
+    COMPOSE_HTTP_TIMEOUT=512 docker compose down --volumes
+    docker_clean
+}
+
+docker_up () {
+    COMPOSE_HTTP_TIMEOUT=512 docker compose up -d
+}
+
+if [ "$FIRST_ARG" == "build" ]; then
+    docker compose build --no-cache
+elif [ "$FIRST_ARG" == "up" ]; then
+    docker_up
+elif [ "$FIRST_ARG" == "down" ]; then
+    docker_down
+elif [ "$FIRST_ARG" == "restart" ]; then
+    docker_down
+    docker_up
+else
+    echo "Invalid argument"
+fi
