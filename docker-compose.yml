@@ -1,6 +1,6 @@
 services:
     keycloak_db:
-        container_name: keycloak_db 
+        container_name: keycloak_db
         image: 'postgres:16.4-alpine3.20'
         environment:
             PGUSER: ${POSTGRES_USER}
@@ -11,7 +11,7 @@ services:
             - ./volumes/keycloak/dbdata:/var/lib/postgresql/data/:delegated
 
     keycloak:
-        image: docker.io/bitnami/keycloak:latest
+        image: docker.io/bitnami/keycloak:26.0.5
         ports:
            - '8080:8080'
         environment:
@@ -30,6 +30,7 @@ services:
         depends_on:
             - keycloak_db
         volumes:
+            - ${SSL_PATH}:/resource/ssl
             - './volumes/keycloak/theme:/opt/bitnami/keycloak/themes/mynewtheme'
 
     nginx:
