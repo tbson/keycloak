@@ -11,7 +11,7 @@ services:
             - ./volumes/keycloak/dbdata:/var/lib/postgresql/data/:delegated
 
     keycloak:
-        image: docker.io/bitnami/keycloak:26.0.5
+        image: docker.io/bitnami/keycloak:latest
         ports:
            - '8080:8080'
         environment:
