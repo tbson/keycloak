@@ -11,27 +11,23 @@ services:
             - ./volumes/keycloak/dbdata:/var/lib/postgresql/data/:delegated
 
     keycloak:
-        image: docker.io/bitnami/keycloak:latest
+        image: quay.io/keycloak/keycloak:latest
+        command: start-dev
         ports:
            - '8080:8080'
         environment:
-            KEYCLOAK_CREATE_ADMIN_USER: true
             KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
             KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-            KEYCLOAK_HOSTNAME: ${KEYCLOAK_HOSTNAME}
-            KEYCLOAK_HTTP_PORT: ${KEYCLOAK_HTTP_PORT}
-            KEYCLOAK_EXTRA_ARGS: ${KEYCLOAK_EXTRA_ARGS}
-
-            KEYCLOAK_DATABASE_HOST: keycloak_db
-            KEYCLOAK_DATABASE_PORT: 5432
-            KEYCLOAK_DATABASE_USER: ${POSTGRES_USER}
-            KEYCLOAK_DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
-            KEYCLOAK_DATABASE_NAME: ${POSTGRES_DB}
+            KC_DB: postgres
+            KC_DB_URL: jdbc:postgresql://keycloak_db:5432/${POSTGRES_DB}
+            KC_DB_USERNAME: ${POSTGRES_USER}
+            KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+            KC_HOSTNAME: ${KEYCLOAK_HOSTNAME}
+            KC_HOSTNAME_STRICT: "false"
+            KC_PROXY_HEADERS: "xforwarded"
+            KC_HTTP_ENABLED: "true"
         depends_on:
             - keycloak_db
-        volumes:
-            - ${SSL_PATH}:/resource/ssl
-            - './volumes/keycloak/theme:/opt/bitnami/keycloak/themes/mynewtheme'
 
     nginx:
         container_name: nginx
